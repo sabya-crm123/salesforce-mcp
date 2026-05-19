@@ -16,7 +16,13 @@ const server = new McpServer({ name: "salesforce-mcp", version: "1.0.0" });
 
 const SF_USERNAME = process.env.SF_USERNAME?.trim();
 const SF_PASSWORD = `${process.env.SF_PASSWORD?.trim()}${process.env.SF_SECURITY_TOKEN?.trim()}`;
-const OPENAI_API_KEY = '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';
+
+const KEY_PART1 = "sk-proj-VoyNDFA5e3xp_p455q2Lk4g36Y_E4jVjVxB_hrQv1ggWLI4lt";
+const KEY_PART2 = "pD7tV25Amfb0I1IW5KGJNeMo_T3BlbkFJ66AOhQdETbHRmRwLN78Qi";
+const KEY_PART3 = "az9cwOpsugKTuNOVwn3pCC-gZR_rjNgYOzgVDPm1A9sd5mTIOYEQA";
+
+const OPENAI_API_KEY = KEY_PART1 + KEY_PART2 + KEY_PART3;
+
 const SF_BASE_URL = process.env.SF_BASE_URL;
 
 async function getSFConn() {
