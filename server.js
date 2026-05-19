@@ -1,3 +1,11 @@
+import "dotenv/config"; 
+
+console.log("SF_USERNAME:", process.env.SF_USERNAME);
+console.log("SF_PASSWORD:", process.env.SF_PASSWORD);
+console.log("SF_SECURITY_TOKEN:", process.env.SF_SECURITY_TOKEN);
+
+console.log("OPENAI:", process.env.OPENAI_API_KEY);
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import jsforce from "jsforce";
@@ -5,22 +13,38 @@ import { z } from "zod";
 
 const server = new McpServer({ name: "salesforce-mcp", version: "1.0.0" });
 
-const SF_USERNAME = "shreyash7@agentforce.com";
-const SF_PASSWORD = "cloud#777jCJkmNicrRXkwLBWSIF9gDEb";
-const OPENAI_API_KEY = "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";
-const SF_BASE_URL = "https://orgfarm-3e0de8e3bc-dev-ed.develop.my.salesforce.com";
+
+const SF_USERNAME = process.env.SF_USERNAME?.trim();
+const SF_PASSWORD = `${process.env.SF_PASSWORD?.trim()}${process.env.SF_SECURITY_TOKEN?.trim()}`;
+const OPENAI_API_KEY = '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';
+const SF_BASE_URL = process.env.SF_BASE_URL;
 
 async function getSFConn() {
-  const conn = new jsforce.Connection({ loginUrl: "https://login.salesforce.com" });
-  await conn.login(SF_USERNAME, SF_PASSWORD);
+  console.log("LOGIN USER:", SF_USERNAME);
+  console.log("LOGIN PASS:", SF_PASSWORD);
+
+  const conn = new jsforce.Connection({
+    loginUrl: "https://login.salesforce.com"
+  });
+
+   await conn.login(
+    "shreyash7@agentforce.com",
+    "cloud#777jCJkmNicrRXkwLBWSIF9gDEb"
+  );
+
   return conn;
 }
 
-// ── GPT helper ───────────────────────────────────────────────────
 async function gptCall(systemPrompt, userPrompt) {
+
+  console.log("API KEY CHECK:", OPENAI_API_KEY);
+
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
-    headers: { "Authorization": `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
+    headers: {
+      "Authorization": `Bearer ${OPENAI_API_KEY}`,
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
       model: "gpt-4o-mini",
       input: [
@@ -29,8 +53,17 @@ async function gptCall(systemPrompt, userPrompt) {
       ]
     })
   });
+
+  console.log("STATUS:", response.status);
+
   const data = await response.json();
-  if (!data.output || !data.output[0]) throw new Error(`OpenAI error: ${JSON.stringify(data)}`);
+
+  console.log("OPENAI RESPONSE:", JSON.stringify(data, null, 2));
+
+  if (!data.output || !data.output[0]) {
+    throw new Error(`OpenAI error: ${JSON.stringify(data)}`);
+  }
+
   return data.output[0].content[0].text.trim();
 }
 
