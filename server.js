@@ -7,7 +7,7 @@ const server = new McpServer({ name: "salesforce-mcp", version: "1.0.0" });
 
 const SF_USERNAME = "shreyash7@agentforce.com";
 const SF_PASSWORD = "cloud#777jCJkmNicrRXkwLBWSIF9gDEb";
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = "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";
 const SF_BASE_URL = "https://orgfarm-3e0de8e3bc-dev-ed.develop.my.salesforce.com";
 
 async function getSFConn() {
