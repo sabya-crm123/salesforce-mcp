@@ -108,9 +108,34 @@ STRICT RULES:
 - Always include Id in SELECT
 
 QUERY TYPE RULES:
-- If user asks "how many" with NO request for details → use SELECT COUNT() FROM Object WHERE ...  (no LIMIT)
+- If user asks ONLY for a total count → use:
+  SELECT COUNT() FROM Object WHERE ...
+
+- If user asks for counts grouped by a field/stage/status/owner/type/industry/etc:
+  use aggregate SOQL:
+  SELECT GroupField, COUNT(Id)
+  FROM Object
+  GROUP BY GroupField
+
+- NEVER use COUNT() together with GROUP BY.
+- If GROUP BY exists, always use COUNT(Id).
 - If user asks "how many" AND wants details like names/numbers → fetch actual records with all requested fields, LIMIT 50
 - All other questions → SELECT actual fields, LIMIT 50
+
+Q: "show me the count of opportunities grouped by stage"
+A: SELECT StageName, COUNT(Id)
+   FROM Opportunity
+   GROUP BY StageName
+
+Q: "show case count by status"
+A: SELECT Status, COUNT(Id)
+   FROM Case
+   GROUP BY Status
+
+Q: "show account count by industry"
+A: SELECT Industry, COUNT(Id)
+   FROM Account
+   GROUP BY Industry
 
 FIELD RULES:
 - "case number" → CaseNumber
